@@ -2,6 +2,8 @@ package com.tutorial.mario;
 
 import com.tutorial.mario.Input.KeyInput;
 import com.tutorial.mario.entity.Player;
+import com.tutorial.mario.graphics.Sprite;
+import com.tutorial.mario.graphics.SpriteSheet;
 import com.tutorial.mario.tile.Wall;
 
 import javax.swing.*;
@@ -15,6 +17,9 @@ public class Game extends Canvas implements Runnable {
     public static final int SCALE = 4;
     public static final String TITLE = "Mario";
     public static Handler handler;
+    public static SpriteSheet sheet;
+    public static Sprite grass;
+    public static Sprite[] players;
 
     private Thread thread;
     private boolean running = false;
@@ -24,13 +29,20 @@ public class Game extends Canvas implements Runnable {
         setPreferredSize(size);
         setMaximumSize(size);
         setMinimumSize(size);
+        players = new Sprite[6];
     }
 
     private void init() {
         handler = new Handler();
+        sheet = new SpriteSheet("/res/spriteSheet.png");
         addKeyListener(new KeyInput());
         handler.addObject(new Player(300, 512, 64, 64, true, Id.player, handler));
-        handler.addObject(new Wall(200, 200, 64, 64, true, Id.wall, handler));
+
+        grass = new Sprite(sheet, 1,1);
+
+        for(int i=0;i<players.length;i++) {
+            players[i] = new Sprite(sheet, i+1, 16);
+        }
     }
 
     private synchronized void start() {

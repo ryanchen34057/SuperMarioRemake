@@ -9,10 +9,14 @@ public abstract class Entity {
 
     public int x, y;
     public int width, height;
+    public int facing = 0;//0 - left, 1-right
     public boolean solid;
     public int velX, velY;
     public Id id;
     public Handler handler;
+    public boolean jumping;
+    public boolean falling;
+    public double gravity;
 
 
     public Entity(int x, int y, int width, int height, boolean solid, Id id, Handler handler) {
@@ -23,6 +27,9 @@ public abstract class Entity {
         this.solid = solid;
         this.id = id;
         this.handler = handler;
+        this.jumping = false;
+        this.falling = true;
+        this.gravity = 0.0;
     }
 
     public abstract void render(Graphics g);
