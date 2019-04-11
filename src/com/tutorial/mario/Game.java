@@ -1,14 +1,18 @@
 package com.tutorial.mario;
 
 import com.tutorial.mario.Input.KeyInput;
+import com.tutorial.mario.entity.Entity;
 import com.tutorial.mario.entity.Player;
 import com.tutorial.mario.graphics.Sprite;
 import com.tutorial.mario.graphics.SpriteSheet;
 import com.tutorial.mario.tile.Wall;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 public class Game extends Canvas implements Runnable {
 
@@ -19,30 +23,53 @@ public class Game extends Canvas implements Runnable {
     public static Handler handler;
     public static SpriteSheet sheet;
     public static Sprite grass;
+    public static Sprite powerUp;
+    public static Sprite usedPowerUp;
+
     public static Sprite[] players;
+    public static Sprite[] goombas;
+    public static Camera cam;
+    public static Sprite mushroom;
 
     private Thread thread;
     private boolean running = false;
+    private BufferedImage image;
 
     public Game() {
         Dimension size = new Dimension(WIDTH * SCALE, HEIGHT * SCALE);
         setPreferredSize(size);
         setMaximumSize(size);
         setMinimumSize(size);
-        players = new Sprite[6];
     }
 
     private void init() {
         handler = new Handler();
         sheet = new SpriteSheet("/res/spriteSheet.png");
+        cam = new Camera();
+
         addKeyListener(new KeyInput());
-        handler.addObject(new Player(300, 512, 64, 64, true, Id.player, handler));
 
         grass = new Sprite(sheet, 1,1);
+        powerUp = new Sprite(sheet, 4, 1);
+        usedPowerUp = new Sprite(sheet, 5, 1);
+        mushroom = new Sprite(sheet, 3, 1);
+        players = new Sprite[6];
+        goombas = new Sprite[6];
 
         for(int i=0;i<players.length;i++) {
             players[i] = new Sprite(sheet, i+1, 16);
         }
+
+        for(int i=0;i<goombas.length;i++) {
+            goombas[i] = new Sprite(sheet, i+1, 15);
+        }
+
+        try {
+            image = ImageIO.read(getClass().getResource("/res/level.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        handler.createLevel(image);
     }
 
     private synchronized void start() {
@@ -105,6 +132,7 @@ public class Game extends Canvas implements Runnable {
         Graphics g = bs.getDrawGraphics();
         g.setColor(Color.BLACK);
         g.fillRect(0,0, getWidth(), getHeight());
+        g.translate(cam.getX(), cam.getY());
         handler.render(g);
         g.dispose();
         bs.show();
@@ -112,6 +140,20 @@ public class Game extends Canvas implements Runnable {
 
     public void tick() {
         handler.tick();
+
+        for(Entity e: handler.entities) {
+            if(e.getId() == Id.player) {
+                cam.tick(e);
+            }
+        }
+    }
+
+    public int getFrameWidth() {
+        return WIDTH * SCALE;
+    }
+
+    public int getFrameHeight() {
+        return HEIGHT * SCALE;
     }
 
     public static void main(String[] args) {

@@ -10,26 +10,30 @@ public abstract class Entity {
     public int x, y;
     public int width, height;
     public int facing = 0;//0 - left, 1-right
-    public boolean solid;
     public int velX, velY;
     public Id id;
     public Handler handler;
     public boolean jumping;
     public boolean falling;
     public double gravity;
+    public int frame;
+    public int frameDelay;
+    public boolean animate;
 
 
-    public Entity(int x, int y, int width, int height, boolean solid, Id id, Handler handler) {
+    public Entity(int x, int y, int width, int height, Id id, Handler handler) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-        this.solid = solid;
         this.id = id;
         this.handler = handler;
         this.jumping = false;
         this.falling = true;
         this.gravity = 0.0;
+        frame = 0;
+        frameDelay = 0;
+        animate = false;
     }
 
     public abstract void render(Graphics g);
@@ -74,14 +78,6 @@ public abstract class Entity {
 
     public void setHeight(int height) {
         this.height = height;
-    }
-
-    public boolean isSolid() {
-        return solid;
-    }
-
-    public void setSolid(boolean solid) {
-        this.solid = solid;
     }
 
     public void setVelX(int velX) {
